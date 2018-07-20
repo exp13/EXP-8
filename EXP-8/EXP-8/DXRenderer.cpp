@@ -83,7 +83,7 @@ void DXRenderer::InitPipeline()
 	D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	dev->CreateInputLayout(ied, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &pLayout);
@@ -95,9 +95,15 @@ void DXRenderer::InitGraphics()
 	// create a triangle using the VERTEX struct
 	VERTEX OurVertices[] =
 	{
-		{ 0.0f, 0.5f, 0.0f,{ 1.0f, 0.0f, 0.0f, 1.0f } },
-	{ 0.45f, -0.5f, 0.0f,{ 0.0f, 1.0f, 0.0f, 1.0f } },
-	{ -0.45f, -0.5f, 0.0f,{ 0.0f, 0.0f, 1.0f, 1.0f } }
+		{ 0.0f, -0.5f, 0.0f,	{ 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ 0.0f, 0.5f, 0.0f,		{ 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ 0.45f, -0.5f, 0.0f,	{ 0.0f, 0.0f, 1.0f, 1.0f } },
+		{ 0.45f, 0.5f, 0.0f,	{ 1.0f, 1.0f, 1.0f, 1.0f } },
+
+		{ -0.5f, -0.5f, 0.0f,{ 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ -0.5f, 0.5f, 0.0f,{ 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ -0.05f, -0.5f, 0.0f,{ 0.0f, 0.0f, 1.0f, 1.0f } },
+		{ -0.05f, 0.5f, 0.0f,{ 1.0f, 1.0f, 1.0f, 1.0f } }
 	};
 
 	// create the vertex buffer
@@ -105,13 +111,13 @@ void DXRenderer::InitGraphics()
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;				// write access by CPU and GPU
-	bd.ByteWidth = sizeof(VERTEX) * 3;			// size is the VERTEX struct * 3
+	bd.ByteWidth = sizeof(VERTEX) * 8;			// size is the VERTEX struct * 3
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;	// use as a vertex buffer
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// allow CPU to write in buffer
 
 	dev->CreateBuffer(&bd, NULL, &pVBuffer);	// create the buffer
 
-												// copy the vertices into the buffer
+	// copy the vertices into the buffer
 	D3D11_MAPPED_SUBRESOURCE ms;
 	devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);	// map the buffer
 	memcpy(ms.pData, OurVertices, sizeof(OurVertices));					// copy the data
@@ -147,10 +153,11 @@ void DXRenderer::RenderFrame()
 	devcon->IASetVertexBuffers(0, 1, &pVBuffer, &stride, &offset);
 
 	// select which primitive type we are using
-	devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// draw the vertex buffer to the back buffer
-	devcon->Draw(3, 0);
+	devcon->Draw(4, 0);
+	devcon->Draw(4, 4);
 
 	// switch the back buffer and the front buffer
 	swapchain->Present(0, 0);
