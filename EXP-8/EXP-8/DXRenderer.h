@@ -15,6 +15,7 @@ public:
 	~DXRenderer();
 	// Forward declarations of D3D11 functions
 	void RenderFrame(void);			// render a single frame
+	unsigned char gfx[64 * 32];		// pixel buffer
 
 private:
 	void InitD3D(HWND hWnd);		// sets up and initializes D3D

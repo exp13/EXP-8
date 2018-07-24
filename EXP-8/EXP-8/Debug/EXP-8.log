@@ -1,2 +1,5 @@
-﻿  DXRenderer.cpp
+﻿  C8Core.cpp
+c:\users\spencer\desktop\school\personal projects\exp-8\exp-8\exp-8\c8core.cpp(87): warning C4060: switch statement contains no 'case' or 'default' labels
+  EXP-8.cpp
+  Generating Code...
   EXP-8.vcxproj -> C:\Users\Spencer\Desktop\School\Personal Projects\EXP-8\EXP-8\Debug\EXP-8.exe

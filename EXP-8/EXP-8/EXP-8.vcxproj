@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="C8Core.h" />
     <ClInclude Include="DXRenderer.h" />
     <ClInclude Include="EXP-8.h" />
     <ClInclude Include="Resource.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="C8Core.cpp" />
     <ClCompile Include="DXRenderer.cpp" />
     <ClCompile Include="EXP-8.cpp" />
     <ClCompile Include="stdafx.cpp">
