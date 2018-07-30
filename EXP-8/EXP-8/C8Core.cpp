@@ -53,6 +53,7 @@ void C8Core::Initialize()
 
 void C8Core::Load(std::string path)
 {
+	// might need to figure out how to read in unsigned char
 	char buffer[4096 - 512] = { 0 };
 	FILE *pROM;
 	fopen_s(&pROM, path.c_str(), "rb");
