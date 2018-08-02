@@ -103,7 +103,8 @@ void DXRenderer::InitGraphics()
 	float vX = -1.0f;
 	float vY = 1.0f;
 
-
+	// TODO: Make OurVertices a private member and write method to update colors
+	//		and the vertex buffer
 	VERTEX OurVertices[8192];
 	bool colorW = TRUE;
 	for (int y = 0; y < 32; y++)

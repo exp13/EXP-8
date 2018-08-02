@@ -107,44 +107,188 @@ void C8Core::Load(std::string path)
 void C8Core::EmuCycle()
 {
 	// Fetch opcode
-	opcode = memory[pc] | memory[pc + 1];
+	opcode = (memory[pc] << 8) | memory[pc + 1];
 
 	// Decode opcode
+	unsigned short switchCode = (opcode & 0xF000);
+
 	switch (opcode & 0xF000)
 	{
 		case 0x0000:
-			switch (opcode & 0x000F)
+			switch (opcode & 0x0F00)
 			{
 				case 0x0000:
-					//_0x00E0();	// clears the screen
-					break;
-				case 0x000E:
-					//_0x00EE();	// returns from subroutine
+					switch (opcode & 0x000F)
+					{
+						case 0x0000:
+							OutputDebugString(L"Calling 0x00E0 \n");
+							_0x00E0();	
+							break;
+						case 0x000E:
+							OutputDebugString(L"Calling 0x00EE \n");
+							_0x00EE();	
+							break;
+						default:
+							OutputDebugString(L"Unknown opcode\n");
+							break;
+					}
 					break;
 				default:
-					OutputDebugString(L"Unknown opcode\n");
+					OutputDebugString(L"Calling 0x0NNN, NOT IMPLEMENTED \n");
 					break;
 			}
 			break;
+		case 0x1000:
+			OutputDebugString(L"Calling 0x1NNN \n");
+			_0x1NNN();
+			break;
 		case 0x2000:
-			_0x2NNN();		// calls subroutine at address 0x0NNN
+			OutputDebugString(L"Calling 0x2NNN \n");
+			_0x2NNN();		
+			break;
+		case 0x3000:
+			OutputDebugString(L"Calling 0x3XNN \n");
+			_0x3XNN();
+			break;
+		case 0x4000:
+			OutputDebugString(L"Calling 0x4XNN \n");
+			_0x4XNN();
+			break;
+		case 0x5000:
+			OutputDebugString(L"Calling 0x5XY0 \n");
+			_0x5XY0();
+			break;
+		case 0x6000:
+			OutputDebugString(L"Calling 0x6XNN \n");
+			_0x6XNN();
+			break;
+		case 0x7000:
+			OutputDebugString(L"Calling 0x7XNN \n");
+			_0x7XNN();
 			break;
 		case 0x8000:
 			switch (opcode & 0x000F)
 			{
+				case 0x0000:
+					OutputDebugString(L"Calling 0x8XY0 \n");
+					_0x8XY0();	
+					break;
+				case 0x0001:
+					OutputDebugString(L"Calling 0x8XY1 \n");
+					_0x8XY1();
+					break;
+				case 0x0002:
+					OutputDebugString(L"Calling 0x8XY2 \n");
+					_0x8XY2();
+					break;
+				case 0x0003:
+					OutputDebugString(L"Calling 0x8XY3 \n");
+					_0x8XY3();
+					break;
 				case 0x0004:
-					_0x8XY4();	// add VX to VY, set VF to 1 if carry otherwise 0
+					OutputDebugString(L"Calling 0x8XY4 \n");
+					_0x8XY4();	
+					break;
+				case 0x0005:
+					OutputDebugString(L"Calling 0x8XY5 \n");
+					_0x8XY5();
+					break;
+				case 0x0006:
+					OutputDebugString(L"Calling 0x8XY6 \n");
+					_0x8XY6();
+					break;
+				case 0x0007:
+					OutputDebugString(L"Calling 0x8XY7 \n");
+					_0x8XY7();
+					break;
+				case 0x000E:
+					OutputDebugString(L"Calling 0x8XYE \n");
+					_0x8XYE();
 					break;
 				default:
 					OutputDebugString(L"Unknown opcode\n");
 					break;
 			}
 			break;
+		case 0x9000:
+			OutputDebugString(L"Calling 0x9XY0 \n");
+			_0x9XY0();
+			break;
 		case 0xA000:
-			_0xANNN();		// sets I to the address NNN
+			OutputDebugString(L"Calling 0xANNN \n");
+			_0xANNN();		
+			break;
+		case 0xB000:
+			OutputDebugString(L"Calling 0xBNNN \n");
+			_0xBNNN();
+			break;
+		case 0xC000:
+			OutputDebugString(L"Calling 0xCXNN \n");
+			_0xCXNN();
 			break;
 		case 0xD000:
-			_0xDXYN();		// draws sprite at XY of height N, sprite stored at I
+			OutputDebugString(L"Calling 0xDXYN \n");
+			_0xDXYN();		
+			break;
+		case 0xE000:
+			switch (opcode & 0x00FF)
+			{
+				case 0x009E:
+					OutputDebugString(L"Calling 0xEX9E \n");
+					_0xEX9E();	
+					break;
+				case 0x00A1:
+					OutputDebugString(L"Calling 0xEXA1 \n");
+					_0xEXA1();
+					break;
+				default:
+					OutputDebugString(L"Unknown opcode\n");
+					break;
+			}
+			break;
+		case 0xF000:
+			switch (opcode & 0x00FF)
+			{
+				case 0x0007:
+					OutputDebugString(L"Calling 0x0FX07 \n");
+					_0xFX07();	
+					break;
+				case 0x000A:
+					OutputDebugString(L"Calling 0x0FX0A \n");
+					_0xFX0A();
+					break;
+				case 0x0015:
+					OutputDebugString(L"Calling 0x0FX15 \n");
+					_0xFX15();
+					break;
+				case 0x0018:
+					OutputDebugString(L"Calling 0x0FX18 \n");
+					_0xFX18();
+					break;
+				case 0x001E:
+					OutputDebugString(L"Calling 0x0FX1E \n");
+					_0xFX1E();
+					break;
+				case 0x0029:
+					OutputDebugString(L"Calling 0x0FX29 \n");
+					_0xFX29();
+					break;
+				case 0x0033:
+					OutputDebugString(L"Calling 0x0FX33 \n");
+					_0xFX33();
+					break;
+				case 0x0055:
+					OutputDebugString(L"Calling 0x0FX55 \n");
+					_0xFX55();
+					break;
+				case 0x0065:
+					OutputDebugString(L"Calling 0x0FX65 \n");
+					_0xFX65();
+					break;
+				default:
+					OutputDebugString(L"Unknown opcode\n");
+					break;
+			}
 			break;
 		default:
 			OutputDebugString(L"Unknown opcode\n");
@@ -167,6 +311,203 @@ void C8Core::EmuCycle()
 
 // Begin opcode functions
 // -----------------------------------------------------------------------
+
+void C8Core::_0x00E0()
+{
+
+}
+
+void C8Core::_0x00EE()
+{
+
+}
+
+void C8Core::_0x1NNN()
+{
+	pc = opcode & 0x0FFF;
+}
+
+void C8Core::_0x2NNN()
+{
+	stack[sp] = pc;
+	++sp;
+	pc = opcode & 0x0FFF;
+}
+
+void C8Core::_0x3XNN()
+{
+	if (V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF))
+	{
+		pc += 4;
+	}
+	else
+	{
+		pc += 2;
+	}
+}
+
+void C8Core::_0x4XNN()
+{
+	if (V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF))
+	{
+		pc += 4;
+	}
+	else
+	{
+		pc += 2;
+	}
+}
+
+void C8Core::_0x5XY0()
+{
+	if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
+	{
+		pc += 4;
+	}
+	else
+	{
+		pc += 2;
+	}
+}
+
+void C8Core::_0x6XNN()
+{
+	V[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF);
+
+	pc += 2;
+}
+
+void C8Core::_0x7XNN()
+{
+	V[(opcode & 0x0F00) >> 8] += (opcode & 0x00FF);
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY0()
+{
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY1()
+{
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY2()
+{
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] & V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY3()
+{
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] ^ V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY4()
+{
+	if (V[(opcode & 0x00F0) >> 4] > (0xFF - V[(opcode & 0x0F00) >> 8]))
+	{
+		V[0xF] = 1; // carry
+	}
+	else
+	{
+		V[0xF] = 0;
+	}
+
+	V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY5()
+{
+	if (V[(opcode & 0x00F0) >> 4] > V[(opcode & 0x0F00) >> 8])
+	{
+		V[0xF] = 0; // borrow
+	}
+	else
+	{
+		V[0xF] = 1;
+	}
+
+	V[(opcode & 0x0F00) >> 8] -= V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY6()
+{
+	V[0xF] = (V[(opcode & 0x00F0) >> 4] & 1);
+	
+	V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x00F0) >> 4] >> 1);
+
+	pc += 2;
+}
+
+void C8Core::_0x8XY7()
+{
+	if (V[(opcode & 0x0F00) >> 8] > V[(opcode & 0x00F0) >> 4])
+	{
+		V[0xF] = 0; // borrow
+	}
+	else
+	{
+		V[0xF] = 1;
+	}
+
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4] - V[(opcode & 0x0F00) >> 8];
+
+	pc += 2;
+}
+
+void C8Core::_0x8XYE()
+{
+	V[0xF] = (V[(opcode & 0x00F0) >> 4] & 128);
+
+	V[(opcode & 0x00F0) >> 4] = (V[(opcode & 0x00F0) >> 4] << 1);
+	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+
+	pc += 2;
+}
+
+void C8Core::_0x9XY0()
+{
+	if (V[(opcode & 0x0F00) >> 8] != V[(opcode & 0x00F0) >> 4])
+	{
+		pc += 4;
+	}
+	else
+	{
+		pc += 2;
+	}
+}
+
+void C8Core::_0xANNN()
+{
+	I = opcode & 0x0FFF;
+	pc += 2;
+}
+
+void C8Core::_0xBNNN()
+{
+	pc = (opcode & 0x0FFF) + V[0x0];
+}
+
+void C8Core::_0xCXNN()
+{
+	V[(opcode & 0x0F00) >> 8] = (std::rand() % 256) & (opcode & 0x00FF);
+
+	pc += 2;
+}
 
 void C8Core::_0xDXYN()
 {
@@ -192,38 +533,124 @@ void C8Core::_0xDXYN()
 				dxR->gfx[((y + yL) * 64 + x + xL)] ^= 1;
 			}
 		}
+	}
 
-		// update frame since we changed gfx
-		dxR->RenderFrame();
-		// increment program counter
+	// update frame since we changed gfx
+	dxR->RenderFrame();
+	// increment program counter
+	pc += 2;
+}
+
+void C8Core::_0xEX9E()
+{
+	if (key[V[(opcode & 0x0F00) >> 8]] != 0)
+	{
+		pc += 4;
+	}
+	else
+	{
 		pc += 2;
 	}
 }
 
-void C8Core::_0xANNN()
+void C8Core::_0xEXA1()
 {
-	I = opcode & 0x0FFF;
-	pc += 2;
-}
-
-void C8Core::_0x2NNN()
-{
-	stack[sp] = pc;
-	++sp;
-	pc = opcode & 0x0FFF;
-}
-
-void C8Core::_0x8XY4()
-{
-	if (V[(opcode & 0x00F0) >> 4] > (0xFF - V[(opcode & 0x0F00) >> 8]))
+	if (key[V[(opcode & 0x0F00) >> 8]] == 0)
 	{
-		V[0xF] = 1; // carry
+		pc += 4;
 	}
 	else
 	{
-		V[0xF] = 0;
+		pc += 2;
+	}
+}
+
+void C8Core::_0xFX07()
+{
+	V[(opcode & 0x0F00) >> 8] = delay_timer;
+
+	pc += 2;
+}
+
+void C8Core::_0xFX0A()
+{
+	int downKey = -1;
+	for (int i = 0; i < 16; i++)
+	{
+		if (key[i] != 0)
+		{
+			downKey = i;
+			break;
+		}
 	}
 
-	V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
+	if (downKey > -1)
+	{
+		V[(opcode & 0x0F00) >> 8] = downKey;
+		pc += 2;
+	}
+}
+
+void C8Core::_0xFX15()
+{
+	delay_timer = V[(opcode & 0x0F00) >> 8];
+
+	pc += 2;
+}
+
+void C8Core::_0xFX18()
+{
+	sound_timer = V[(opcode & 0x0F00) >> 8];
+
+	pc += 2;
+}
+
+void C8Core::_0xFX1E()
+{
+	I += V[(opcode & 0x0F00) >> 8];
+
+	pc += 2;
+}
+
+void C8Core::_0xFX29()
+{
+	char hex[] = "0123456789ABCDEF";
+	for (int i = 0; i < 16; i++)
+	{
+		if (V[(opcode & 0x0F00) >> 8] == hex[i])
+		{
+			I = i * 5;
+		}
+	}
+
+	pc += 2;
+}
+
+void C8Core::_0xFX33()
+{
+	memory[I] = V[(opcode & 0x0F00) >> 8] / 100;
+	memory[I + 1] = (V[(opcode & 0x0F00) >> 8] / 10) % 10;
+	memory[I + 2] = (V[(opcode & 0x0F00) >> 8] % 100) % 10;
+
+	pc += 2;
+}
+
+void C8Core::_0xFX55()
+{
+	for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
+	{
+		memory[I + i] = V[i];
+	}
+
+	pc += 2;
+}
+
+void C8Core::_0xFX65()
+{
+	for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
+	{
+		V[i] = memory[I + i];
+	}
+
 	pc += 2;
 }

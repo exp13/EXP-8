@@ -1,5 +1,2 @@
-﻿  C8Core.cpp
-c:\users\spencer\desktop\school\personal projects\exp-8\exp-8\exp-8\c8core.cpp(82): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-  EXP-8.cpp
-  Generating Code...
+﻿  EXP-8.cpp
   EXP-8.vcxproj -> C:\Users\Spencer\Desktop\School\Personal Projects\EXP-8\EXP-8\Debug\EXP-8.exe
