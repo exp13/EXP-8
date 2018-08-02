@@ -14,13 +14,14 @@ public:
 	DXRenderer(HWND mainWnd);
 	~DXRenderer();
 	// Forward declarations of D3D11 functions
-	void RenderFrame(void);			// render a single frame
+	void UpdatePixels(void);		// update screen for gfx changes
 	unsigned char gfx[64 * 32];		// pixel buffer
 
 private:
 	void InitD3D(HWND hWnd);		// sets up and initializes D3D
 	void InitPipeline(void);		// initialize render pipeline
 	void InitGraphics(void);		// initialize graphics
+	void RenderFrame(void);			// render a single frame
 	void CleanD3D(void);			// closes D3D and releases memory
 
 	// Global Declarations for D3D11, make sure to release all COMs in CleanD3D
@@ -33,5 +34,6 @@ private:
 	struct VERTEX { FLOAT X, Y, Z;  FLOAT Color[4]; };	// a struct to define a vertex
 	ID3D11Buffer *pVBuffer;								// the vertex buffer
 	ID3D11InputLayout *pLayout;							// the vertex input layout
+	VERTEX OurVertices[8192];							// array of VERTEX for pixels' strips
 };
 

@@ -7,14 +7,14 @@
 
 DXRenderer::DXRenderer(HWND mainWnd)
 {
-	InitD3D(mainWnd);
-	InitGraphics();
-	InitPipeline();
-
 	for (int i = 0; i < 2048; i++)
 	{
 		gfx[i] = 0;
 	}
+
+	InitD3D(mainWnd);
+	InitPipeline();
+	InitGraphics();
 }
 
 
@@ -105,8 +105,7 @@ void DXRenderer::InitGraphics()
 
 	// TODO: Make OurVertices a private member and write method to update colors
 	//		and the vertex buffer
-	VERTEX OurVertices[8192];
-	bool colorW = TRUE;
+	
 	for (int y = 0; y < 32; y++)
 	{
 		for (int x = 0; x < 64; x++)
@@ -145,12 +144,10 @@ void DXRenderer::InitGraphics()
 				}
 				OurVertices[y * 64 * 4 + x + i].Color[3] = 1.0f;
 			}
-			colorW = !colorW;
 
 			vX += Xdiff;
 		}
-		// flip starting color for checkerboard
-		colorW = !colorW;
+		
 		vX = -1.0f;
 		vY -= Ydiff;
 	}
@@ -171,6 +168,54 @@ void DXRenderer::InitGraphics()
 	devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);	// map the buffer
 	memcpy(ms.pData, OurVertices, sizeof(OurVertices));					// copy the data
 	devcon->Unmap(pVBuffer, NULL);										// unmap the buffer
+	
+	RenderFrame();
+}
+
+void DXRenderer::UpdatePixels()
+{
+	float Xdiff = 2.0f / 64.0f;
+	float Ydiff = 2.0f / 32.0f;
+	float vX = -1.0f;
+	float vY = 1.0f;
+
+	// update colors of vertices
+	for (int y = 0; y < 32; y++)
+	{
+		for (int x = 0; x < 64; x++)
+		{
+			// set color of 4 corners of pixel to white or black based on colorW
+			for (int i = 0; i < 4; i++)
+			{
+				if (gfx[y * 64 + x] == 1)
+				{
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[0] = 1.0f;
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[1] = 1.0f;
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[2] = 1.0f;
+				}
+				else
+				{
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[0] = 0.0f;
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[1] = 0.0f;
+					OurVertices[y * 64 * 4 + x * 4 + i].Color[2] = 0.0f;
+				}
+				OurVertices[y * 64 * 4 + x + i].Color[3] = 1.0f;
+			}
+
+			vX += Xdiff;
+		}
+
+		vX = -1.0f;
+		vY -= Ydiff;
+	}
+
+	// copy the vertices into the buffer
+	D3D11_MAPPED_SUBRESOURCE ms;
+	devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);	// map the buffer
+	memcpy(ms.pData, OurVertices, sizeof(OurVertices));					// copy the data
+	devcon->Unmap(pVBuffer, NULL);										// unmap the buffer
+
+	RenderFrame();
 }
 
 // this is the function that cleans up D3D and COM

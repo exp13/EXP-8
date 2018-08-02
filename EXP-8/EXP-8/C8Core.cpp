@@ -7,9 +7,6 @@
 C8Core::C8Core(HWND mainWnd)
 {
 	dxR = new DXRenderer(mainWnd);
-
-	// Render beginning frame
-	dxR->RenderFrame();
 }
 
 
@@ -20,7 +17,7 @@ C8Core::~C8Core()
 
 void C8Core::Render()
 {
-	dxR->RenderFrame();
+	dxR->UpdatePixels();
 }
 
 void C8Core::Initialize()
@@ -74,6 +71,18 @@ void C8Core::Load(std::string path)
 		}
 		fclose(pROM);
 	}*/
+
+	// set appropriate quirk flags
+	if (path.find("BLINKY") != std::string::npos)
+	{
+		load_quirk = true;
+		shift_quirk = true;
+	}
+	else
+	{
+		load_quirk = false;
+		shift_quirk = false;
+	}
 
 	// open file
 	std::ifstream inf(path.c_str(), std::ifstream::binary);
@@ -250,39 +259,39 @@ void C8Core::EmuCycle()
 			switch (opcode & 0x00FF)
 			{
 				case 0x0007:
-					OutputDebugString(L"Calling 0x0FX07 \n");
+					OutputDebugString(L"Calling 0xFX07 \n");
 					_0xFX07();	
 					break;
 				case 0x000A:
-					OutputDebugString(L"Calling 0x0FX0A \n");
+					OutputDebugString(L"Calling 0xFX0A \n");
 					_0xFX0A();
 					break;
 				case 0x0015:
-					OutputDebugString(L"Calling 0x0FX15 \n");
+					OutputDebugString(L"Calling 0xFX15 \n");
 					_0xFX15();
 					break;
 				case 0x0018:
-					OutputDebugString(L"Calling 0x0FX18 \n");
+					OutputDebugString(L"Calling 0xFX18 \n");
 					_0xFX18();
 					break;
 				case 0x001E:
-					OutputDebugString(L"Calling 0x0FX1E \n");
+					OutputDebugString(L"Calling 0xFX1E \n");
 					_0xFX1E();
 					break;
 				case 0x0029:
-					OutputDebugString(L"Calling 0x0FX29 \n");
+					OutputDebugString(L"Calling 0xFX29 \n");
 					_0xFX29();
 					break;
 				case 0x0033:
-					OutputDebugString(L"Calling 0x0FX33 \n");
+					OutputDebugString(L"Calling 0xFX33 \n");
 					_0xFX33();
 					break;
 				case 0x0055:
-					OutputDebugString(L"Calling 0x0FX55 \n");
+					OutputDebugString(L"Calling 0xFX55 \n");
 					_0xFX55();
 					break;
 				case 0x0065:
-					OutputDebugString(L"Calling 0x0FX65 \n");
+					OutputDebugString(L"Calling 0xFX65 \n");
 					_0xFX65();
 					break;
 				default:
@@ -296,16 +305,22 @@ void C8Core::EmuCycle()
 	}
 
 	// Update timers
-	if (delay_timer > 0)
-		--delay_timer;
-
-	if (sound_timer > 0)
+	clockCounter++;
+	if (clockCounter >= 9)
 	{
-		if (sound_timer == 1)
+		if (delay_timer > 0)
+			--delay_timer;
+
+		if (sound_timer > 0)
 		{
-			// put audio beep here
+			if (sound_timer == 1)
+			{
+				// put audio beep here
+			}
+			--sound_timer;
 		}
-		--sound_timer;
+
+		clockCounter = 0;
 	}
 }
 
@@ -314,12 +329,21 @@ void C8Core::EmuCycle()
 
 void C8Core::_0x00E0()
 {
+	for (int i = 0; i < 2048;i++)
+	{
+		dxR->gfx[i] = 0;
+	}
 
+	dxR->UpdatePixels();
+
+	pc += 2;
 }
 
 void C8Core::_0x00EE()
 {
-
+	--sp;
+	pc = stack[sp] + 2;
+	stack[sp] = 0;
 }
 
 void C8Core::_0x1NNN()
@@ -446,9 +470,18 @@ void C8Core::_0x8XY5()
 
 void C8Core::_0x8XY6()
 {
-	V[0xF] = (V[(opcode & 0x00F0) >> 4] & 1);
-	
-	V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x00F0) >> 4] >> 1);
+	if (shift_quirk)
+	{
+		V[0xF] = (V[(opcode & 0x0F00) >> 8] & 1);
+
+		V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x0F00) >> 8] >> 1);
+	}
+	else
+	{
+		V[0xF] = (V[(opcode & 0x00F0) >> 4] & 1);
+
+		V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x00F0) >> 4] >> 1);
+	}
 
 	pc += 2;
 }
@@ -471,10 +504,19 @@ void C8Core::_0x8XY7()
 
 void C8Core::_0x8XYE()
 {
-	V[0xF] = (V[(opcode & 0x00F0) >> 4] & 128);
+	if (shift_quirk)
+	{
+		V[0xF] = (V[(opcode & 0x0F00) >> 8] & 128);
 
-	V[(opcode & 0x00F0) >> 4] = (V[(opcode & 0x00F0) >> 4] << 1);
-	V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+		V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x0F00) >> 8] << 1);
+	}
+	else 
+	{
+		V[0xF] = (V[(opcode & 0x00F0) >> 4] & 128);
+
+		V[(opcode & 0x00F0) >> 4] = (V[(opcode & 0x00F0) >> 4] << 1);
+		V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+	}
 
 	pc += 2;
 }
@@ -516,6 +558,12 @@ void C8Core::_0xDXYN()
 	unsigned short height = opcode & 0x000F;
 	unsigned short pixel;
 
+	if (x > 63 || y > 31 || I > 4095)
+	{
+		OutputDebugString(L"draw out of range \n");
+		return;
+	}
+
 	V[0xF] = 0;
 	for (int yL = 0; yL < height; yL++)
 	{
@@ -536,7 +584,7 @@ void C8Core::_0xDXYN()
 	}
 
 	// update frame since we changed gfx
-	dxR->RenderFrame();
+	Render();
 	// increment program counter
 	pc += 2;
 }
@@ -614,14 +662,7 @@ void C8Core::_0xFX1E()
 
 void C8Core::_0xFX29()
 {
-	unsigned char hex[] = "0123456789ABCDEF";
-	for (int i = 0; i < 16; i++)
-	{
-		if (V[(opcode & 0x0F00) >> 8] == hex[i])
-		{
-			I = i * 5;
-		}
-	}
+	I = V[(opcode & 0x0F00) >> 8] * 5;
 
 	pc += 2;
 }
@@ -642,6 +683,11 @@ void C8Core::_0xFX55()
 		memory[I + i] = V[i];
 	}
 
+	if (load_quirk)
+	{
+		I += ((opcode & 0x0F00) >> 8);
+	}
+
 	pc += 2;
 }
 
@@ -650,6 +696,11 @@ void C8Core::_0xFX65()
 	for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
 	{
 		V[i] = memory[I + i];
+	}
+
+	if (load_quirk)
+	{
+		I += ((opcode & 0x0F00) >> 8);
 	}
 
 	pc += 2;

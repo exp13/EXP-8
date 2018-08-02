@@ -33,6 +33,11 @@ private:
 	unsigned char key[16];
 	// object pointer for DXRenderer class for gfx
 	DXRenderer *dxR;
+	// counter for 60hz clock, tick clock every 9 machine cycles (540hz/60hz)
+	int clockCounter = 0;
+	// flags for improperly coded ROMs, will only react to proper names
+	bool load_quirk = false;
+	bool shift_quirk = false;
 	// CHIP-8 fontset
 	unsigned char chip8_fontset[80] =
 	{
