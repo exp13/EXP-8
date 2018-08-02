@@ -614,7 +614,7 @@ void C8Core::_0xFX1E()
 
 void C8Core::_0xFX29()
 {
-	char hex[] = "0123456789ABCDEF";
+	unsigned char hex[] = "0123456789ABCDEF";
 	for (int i = 0; i < 16; i++)
 	{
 		if (V[(opcode & 0x0F00) >> 8] == hex[i])
