@@ -59,8 +59,8 @@ private:
 		0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 	};
 	// Functions for opcodes
-	void _0x00E0(void);		// clears the screen NOT DONE
-	void _0x00EE(void);		// returns from subroutine NOT DONE
+	void _0x00E0(void);		// clears the screen
+	void _0x00EE(void);		// returns from subroutine
 	void _0x1NNN(void);		// jumps to address	NNN
 	void _0x2NNN(void);		// calls subroutine at address 0x0NNN
 	void _0x3XNN(void);		// skip next instruction if VX equals NN
