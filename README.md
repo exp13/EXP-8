@@ -1,2 +1,2 @@
 # EXP-8
-A poor attempt at a CHIP-8 emulator in C++
+A CHIP-8 emulator written in C++ using Win32 SDK and Direct3D
